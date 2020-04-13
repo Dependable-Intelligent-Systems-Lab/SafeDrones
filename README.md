@@ -6,5 +6,5 @@
 <p align="center">
  <img src="https://github.com/koo-ec/Reliability_Multirotor_Drones/blob/master/SafeDrones_Logo.png" alt="SafeDrones_Logo"> </p>
 
-# Reliability_Multirotor_Drones
+# SafeDrones
 
