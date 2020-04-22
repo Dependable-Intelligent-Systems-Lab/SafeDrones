@@ -1,5 +1,5 @@
 ## Implementation in MATLAB
-<p align = 'justify'>The Markov_Risk_Calc receive the Motorstatus from fault detection and diagnosis unit and based on the dornes configuration and its current flight time, cacluate the P_fail and MTTF. Where P_Fail is the probability of drone being failed vs time and MTTF also stands for Mean Time To Failure. Based on this two parameters the autonomous system can decide to I) continuoe the mission, II) avoide the mission and come back to station or III) do emergency safe landing.</p>
+<p align = 'justify'>The Markov_Risk_Calc receive the Motorstatus from fault detection and diagnosis unit and based on the drones configuration and its current flight time, calculate the P_fail and MTTF. Where P_Fail is the probability of drone being failed vs time and MTTF also stands for Mean Time To Failure. Based on these two parameters the autonomous system can decide to I) continue the mission, II) avoid the mission and come back to station or III) do emergency safe landing.</p>
 <pre> 
 % Motors Status 0 for failed and 1 for operational
 % For Example for Hexacopter MotorStatus can be:
