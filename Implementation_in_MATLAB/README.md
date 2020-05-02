@@ -7,7 +7,6 @@
 % Lambda = Failure Rate of Propulsion System including rotors, motors' drivers and propellers.
 % Motors_Configuration: It can be 'PNPN' for quadcopters, 'PNPNPN' and 'PPNNPN' ...
 % for hexacopters and 'PPNNPPNN' for octacopter.
-
-
+<a></a>
 [P_Fail, MTTF] = Markov_Risk_Calc(MotorStatus, Motors_Configuration, Lambda, time)
 </pre>
