@@ -22,7 +22,8 @@ A framework for Reliability/Safety Modelling and Evaluation of Multicopters (Mul
 </p>
 
 ## Related Works
-Shi, D., Yang, B., & Quan, Q. (2016, July). <b>Reliability Analysis of Multicopter Configurations based on Controllability Theory<b>. In 2016 35th Chinese Control Conference (CCC) (pp. 6740-6745). IEEE.
+<p align = 'justified'>
+Shi, D., Yang, B., & Quan, Q. (2016, July). <b>Reliability Analysis of Multicopter Configurations based on Controllability Theory</b>. In 2016 35th Chinese Control Conference (CCC) (pp. 6740-6745). IEEE.</p>
 
 ## Publication
 <p align = 'justified'>
