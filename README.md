@@ -36,13 +36,13 @@ This framework is available under an MIT License.
 <table style="width:100%">
   <tr>
     <th>SafeML</th>
-    <th>SafeDrones</th> 
+    <th>SafeNN</th> 
     <th>SafeIoT</th>
     <th>HDFT</th>
   </tr>
   <tr>
     <td><a href = "https://github.com/ISorokos/SafeML"><img src="https://github.com/koo-ec/SafeNN/blob/master/Pictures/SafeML_Logo.png" alt="AI safety, machine learning safety, deep learning safety, SafeML, SafeAI, SafeDL"></a></td>
-    <td><img src="https://github.com/koo-ec/SafeNN/blob/master/Pictures/SafeDrones_Logo.png" alt="Neural Network Safety Dependability reliability explainability interpretability, AI safety"></td>
+    <td><img src="https://github.com/koo-ec/SafeDrones/blob/master/Figures/SafeNN_Logo_v2.png" alt="Neural Network Safety Dependability reliability explainability interpretability, AI safety"></td>
     <td><img src="https://github.com/koo-ec/SafeNN/blob/master/Pictures/SafeIoT_Logo.png" alt="Internet of thing safety, IoT safety, SafeIoT, Safe IoT"></td>
     <td><a href = "https://github.com/koo-ec/Hierarchical-Dynamic-Fault-Tree"><img src="https://github.com/koo-ec/SafeNN/blob/master/Pictures/HDFT_Logo.png" alt="Dynamic Fault Tree"></a></td>
   </tr>
