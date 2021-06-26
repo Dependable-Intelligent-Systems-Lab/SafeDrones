@@ -1,3 +1,5 @@
+[![View Safe Drones on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://uk.mathworks.com/matlabcentral/fileexchange/94880-safe-drones)
+
 ## Implementation in MATLAB
 <p align = 'justify'>The Markov_Risk_Calc receive the Motorstatus from fault detection and diagnosis unit and based on the drones configuration and its current flight time, calculate the P_fail and MTTF. Where P_Fail is the probability of drone being failed vs time and MTTF also stands for Mean Time To Failure. Based on these two parameters the autonomous system can decide to I) continue the mission, II) avoid the mission and come back to station or III) do emergency safe landing.</p>
 <pre> 
