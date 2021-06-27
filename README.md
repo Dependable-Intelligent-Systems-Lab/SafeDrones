@@ -32,7 +32,7 @@ This framework is available under an MIT License.
  
 ## Acknowledgement
 
-<p align = 'justified'>The idea of the SafeDrone has been formed in  <a href = "https://rics.uninova.pt">Robotic and Industrial Complex Systems (RICS)</a> research group at <a href = "https://www.uninova.pt">CTS UNINOVA</a>, Portugal in 2018 and it will extended via the <a href = "https://www.sesame-project.org"><b>Secure and Safe MultiRobot Systems (SESAME) H2020 Project</b></a> under <a href = "https://cordis.europa.eu/project/id/101017258"> Grant Agreement 101017258</a> at the Dependable Intelligent Systems (DEIS) Laboratory, University of Hull, United Kingdom.</p> 
+<p align = 'justified'>The idea of the SafeDrone has been formed in  <a href = "https://rics.uninova.pt">Robotic and Industrial Complex Systems (RICS)</a> research group at <a href = "https://www.uninova.pt">CTS UNINOVA</a>, Portugal in 2018 and it will be extended via the <a href = "https://www.sesame-project.org"><b>Secure and Safe MultiRobot Systems (SESAME) H2020 Project</b></a> under <a href = "https://cordis.europa.eu/project/id/101017258"> Grant Agreement 101017258</a> at the Dependable Intelligent Systems (DEIS) Laboratory, University of Hull, United Kingdom.</p> 
 
 ## Dependable Intelligent Systems (DEIS) Lab. Projects
 <table style="width:100%">
