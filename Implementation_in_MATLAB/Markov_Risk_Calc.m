@@ -1,9 +1,9 @@
 function [P_Fail, MTTF] = Markov_Risk_Calc(MotorStatus, Motors_Configuration, Lamdba, time)
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Program Name : Markov Solver                                            %
+    % Program Name : Markov-based Drone's Reliability and MTTF Estimator      %
     % Author       : Koorosh Aslansefat                                       %
-    % Version      : 1.0.0                                                    %
+    % Version      : 1.0.1                                                    %
     % Description  : A Markov Process-Based Approach for Reliability          %
     %                Evaluation of the Propulsion System                      %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -118,6 +118,44 @@ function [P_Fail, MTTF] = Markov_Risk_Calc(MotorStatus, Motors_Configuration, La
             t = time;
             P_Fail = eval(P_Fail2_Symbolic);
             MTTF = eval(Time2_Symbolic);
+            
+        case 'PPNNPPNN'
+            if SysState == 8
+                P03=[1 0 0 0 0 0]';
+            elseif SysState == 7
+                P03=[0 1 0 0 0 0]';
+            elseif SysState == 6
+                P03=[0 0 1 0 0 0]';
+            elseif SysState == 5
+                P03=[0 0 0 1 0 0]';
+            elseif SysState == 4  
+                P03=[0 0 0 0 1 0]';
+            else
+                P_Fail = 1; 
+                MTTF = 0; 
+            end
+
+            M3 = [-8*L,     0,    0,    0,    0,    0
+                   8*L,  -7*L,    0,    0,    0,    0
+                     0,   6*L, -6*L,    0,    0,    0
+                     0,     0,  4*L, -5*L,    0,    0
+                     0,     0,    0,  2*L, -4*L,    0
+                     0,   1*L,  2*L,  3*L,  4*L,    0];
+
+            P3 = expm(M3*t)*P03;
+            P_Fail3_Symbolic = P3(end);
+
+            N3 = [-8*L,     0,    0,    0,    0
+                   8*L,  -7*L,    0,    0,    0
+                     0,   6*L, -6*L,    0,    0
+                     0,     0,  4*L, -5*L,    0
+                     0,     0,    0,  2*L, -4*L];
+            Time3_Symbolic = sum(sum(-1.*inv(N3),2).*(P03(1:5)));
+
+            L = Lamdba;
+            t = time;
+            P_Fail = eval(P_Fail3_Symbolic);
+            MTTF = eval(Time3_Symbolic);
 
         otherwise
             disp('The current Motors_Configuration is not defined in this version, please check the updated versions')
