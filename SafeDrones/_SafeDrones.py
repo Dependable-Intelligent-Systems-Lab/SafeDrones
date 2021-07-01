@@ -29,10 +29,9 @@ Class SafeDrones():
 		# For Example for Hexacopter MotorStatus can be:
 		# MotorStatus = [1,1,1,1,1,1] means all motors are operational and MotorStatus = [0,1,1,1,1,1] means motor a has failed.
 		# Lambda = Failure Rate of Propulsion System including rotors, motors' drivers and propellers.
-		# Motors_Configuration: It can be 'PNPN' for quadcopters, 'PNPNPN' and 'PPNNPN' ...
-		# for hexacopters and 'PPNNPPNN' for octacopter.
+		# Motors_Configuration: It can be 'PNPN' for quadcopters, 'PNPNPN' and 'PPNNPN' for hexacopters and 'PPNNPPNN' for octacopter. 
 
-		#%
+		##
 		import numpy as np # linear algebra
 		import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 		import sympy as sym
@@ -122,8 +121,8 @@ Class SafeDrones():
 			P_Fail = P2[-1]
 
 			N2 = sym.Matrix([[-6*L,     0,    0],
-							  [4*L,  -5*L,    0],
-							  [  0,   2*L, -4*L]]
+				          [4*L,  -5*L,    0],
+					  [  0,   2*L, -4*L]])
 				
 			tt = -1*N.inv()
 			MTTF = sum(tt[Sflag,:])
