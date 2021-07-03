@@ -117,13 +117,13 @@ Class SafeDrones():
             
             if SysState == 6:
                 P02 = sym.Matrix([[1],[0],[0],[0]])
-                Sflag = 3
+                Sflag = 2
             elif SysState == 5:
                 P02 = sym.Matrix([[0],[1],[0],[0]])
-                Sflag = 2
+                Sflag = 1
             elif SysState == 4:
                 P02 = sym.Matrix([[0],[0],[1],[0]])
-                Sflag = 1
+                Sflag = 0
             else:
                 P_Fail = 1; 
                 MTTF = 0;
@@ -139,23 +139,23 @@ Class SafeDrones():
                               [4*L,  -5*L,    0],
                               [  0,   2*L, -4*L]])
                 
-            tt = -1*N.inv()
+            tt = -1*N2.inv()
             MTTF = sum(tt[Sflag,:])
         elif Motors_Configuration == 'PPNNPPNN':
 
-            if SysState == 8
+            if SysState == 8:
                 P03 = sym.Matrix([[1],[0],[0],[0],[0],[0]])
                 Sflag = 4
-            elif SysState == 7
+            elif SysState == 7:
                 P03 = sym.Matrix([[0],[1],[0],[0],[0],[0]])
                 Sflag = 3
-            elif SysState == 6
+            elif SysState == 6:
                 P03 = sym.Matrix([[0],[0],[1],[0],[0],[0]])
                 Sflag = 2
-            elif SysState == 5
+            elif SysState == 5:
                 P03 = sym.Matrix([[0],[0],[0],[1],[0],[0]])
                 Sflag = 1
-            elif SysState == 4  
+            elif SysState == 4: 
                 P03 = sym.Matrix([[0],[0],[0],[0],[1],[0]])
                 Sflag = 0
             else
@@ -187,15 +187,15 @@ Class SafeDrones():
 
         return P_Fail.evalf(subs={L: Motors_Lambda, t: time}), MTTF.evalf(subs={L: Motors_Lambda, t: time})
         
-    def Communication_Failure_Risk_Calc(self.CommStatus, self.Comm_Lambda, self.time)
+   # def Communication_Failure_Risk_Calc(self.CommStatus, self.Comm_Lambda, self.time)
     
-        To be completed...
+   #     To be completed...
         
-    def Battery_Degradation_Risk_Calc(self.BattStatus, self.Batt_Lambda, self.time)
+   # def Battery_Degradation_Risk_Calc(self.BattStatus, self.Batt_Lambda, self.time)
     
-        To be completed...
+   #     To be completed...
         
-    def Drone_Risk_Calc(self.time)
+   # def Drone_Risk_Calc(self.time)
         
-        To be completed based on the Fault Tree Analysis of the whole Drone
+   #     To be completed based on the Fault Tree Analysis of the whole Drone
     
