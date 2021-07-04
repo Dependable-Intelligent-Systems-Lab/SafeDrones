@@ -7,7 +7,7 @@
  <img src="https://github.com/koo-ec/Reliability_Multirotor_Drones/blob/master/SafeDrones_Logo.png" alt="SafeDrones_Logo"> </p>
 
 # SafeDrones
-A framework for Reliability/Safety Modelling and Evaluation of Multicopters (Multi-rotor Drones) using Markov Process
+A Framework for Reliability/Safety Modelling and Evaluation of Multicopters (Multi-rotor Drones)
 
 ## Markov Models
 
