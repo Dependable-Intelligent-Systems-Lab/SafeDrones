@@ -7,7 +7,7 @@
  <img src="https://github.com/koo-ec/Reliability_Multirotor_Drones/blob/master/SafeDrones_Logo.png" alt="SafeDrones_Logo"> </p>
 
 # SafeDrones
-<p align = 'justified'>A Framework for Reliability/Safety Modelling and Evaluation of Multicopters (Multi-rotor Drones) and <b>Electric powered Vertical TakeOff and Landing (eVTOL) aircraft.</b></p>
+<p align = 'justified'>A Framework for Reliability/Safety Modelling and Evaluation of Multicopters (Multi-rotor Drones) and <b>Electric powered Vertical TakeOff and Landing (eVTOL) </b> aircrafts.</p>
 
 ## Markov Models
 
