@@ -7,12 +7,12 @@
  <img src="https://github.com/koo-ec/Reliability_Multirotor_Drones/blob/master/SafeDrones_Logo.png" alt="SafeDrones_Logo"> </p>
 
 # SafeDrones
-<p align = 'justified'>A Framework for Reliability/Safety Modelling and Evaluation of Multicopters (Multi-rotor Drones) and <b>Electric powered Vertical TakeOff and Landing (eVTOL) </b> aircrafts.</p>
+<p align = 'justified'>A Framework for Reliability/Safety Modelling and Evaluation of Multicopters (Multi-rotor Drones) and <b>Electric powered Vertical TakeOff and Landing (eVTOL) </b> Aircrafts.</p>
 
 ## Markov Models
 
 <p align="center">
- <img src="https://github.com/koo-ec/SafeDrones/blob/master/Figures/Hexa_PNPNPN.png" alt="Markov_Hexacopter_PNPNPN">
+ <img src="https://github.com/koo-ec/SafeDrones/blob/master/Figures/Hexa_PNPNPN.png" alt="Markov Hexacopter PNPNPN Reliability">
  <figcaption>Figure 1. Markov Model of a hexacopter with PNPNPN configuration.</figcaption>
 </p>
 
