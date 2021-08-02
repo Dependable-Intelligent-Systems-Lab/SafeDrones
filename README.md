@@ -7,7 +7,7 @@
  <img src="https://github.com/koo-ec/Reliability_Multirotor_Drones/blob/master/SafeDrones_Logo.png" alt="SafeDrones_Logo"> </p>
 
 # SafeDrones
-<p align = 'justified'>A Framework for Reliability/Safety Modelling and Evaluation of Multicopters (Multi-rotor Drones) and <b>Electric powered Vertical TakeOff and Landing (eVTOL) </b> Aircrafts.</p>
+<p align = 'justified'>A Framework for Reliability/Safety Modelling and Evaluation of <b>Multicopters (Multi-rotor Drones)</b> and <b>Electric powered Vertical TakeOff and Landing (eVTOL)</b> Aircrafts.</p>
  
 <p align="center">
  <img src="https://github.com/koo-ec/SafeDrones/blob/master/Figures/EHANG_SafeDrones_v5.gif" alt="Ehang, SafeDrones, Safety, reliability, Safe flight, arial vehicles, evtol">
