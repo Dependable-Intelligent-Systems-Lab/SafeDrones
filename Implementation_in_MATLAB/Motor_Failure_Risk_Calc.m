@@ -1,4 +1,4 @@
-function [P_Fail, MTTF] = Markov_Risk_Calc(MotorStatus, Motors_Configuration, Lamdba, time)
+function [P_Fail, MTTF] = Motor_Failure_Risk_Calc(MotorStatus, Motors_Configuration, Lamdba, time)
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Program Name : Markov-based Drone's Reliability and MTTF Estimator      %
