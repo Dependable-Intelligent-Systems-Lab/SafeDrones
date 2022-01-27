@@ -34,7 +34,9 @@
 ## Collaborators
 <a href = "https://www.hull.ac.uk/work-with-us/research/groups/dependable-intelligent-systems">Dependable Intelligent Systems Lab., University of Hull</a>
  
-<a href = "https://www.kios.ucy.ac.cy/">The KIOS Research and Innovation Centre of Excellence (KIOS CoE)</a>
+<a href = "https://www.kios.ucy.ac.cy">The KIOS Research and Innovation Centre of Excellence (KIOS CoE)</a>
+ 
+<a href = "https://www.iese.fraunhofer.de">Fraunhofer Institute for Experimental Software Engineering</a>
  
 ## License
 This framework is available under the MIT License. 
