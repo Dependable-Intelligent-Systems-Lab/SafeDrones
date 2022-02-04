@@ -267,6 +267,47 @@ class SafeDrones:
         MTTF = sum(tt[Sflag,:])
 
         return P_Battery_Fail.evalf(subs={t: time}), MTTF.evalf(subs={t: time})
+    
+    
+    #Chip MTTF and Pfail Model estimation based on the temperature. The model uses arrhenious function to estimate the MTTF
+    def Chip_MTTF_Model(self,MTTFref, Tr, Ta, u,b, time):
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # Program Name : Chip MTTF estimation model based on temperature          %
+        # Author       : Panagiota Nikolaou                                       %
+        # Version      : 1.0.0                                                    %
+        # Description  : MTTF and Pfail Chip's estimation based on the dynamic    %
+        #                temperature and the time. Use of arrhenius equation to   %
+        #                incorporate temperature in the MTTf estimation           %
+        # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # MTTFref: is the reference MTTF in hours
+        # Tr: is the reference temperature
+        # Ta: is the actual temperature
+        # u: is the drone's utilization
+        # Ea: activation energy in electron-volts
+        # K: Boltzmans constant (8.617E-05)
+        # b: beta describes the Weibull failure distribution,
+        #             # b<1.0 indicates infant mortality,
+        #             # b=1 means random failure, the failure rate remains constant over time
+        #             # b>1 indicates wear-out failure.
+        ##
+
+        import math
+        import sympy as sym  # Symbolic Calculation
+
+        t = sym.Symbol('t') # t is used for the time
+        Ea = 0.3
+        K = 8.617 * math.exp(-5)
+
+
+        AF = sym.exp((Ea / K) * ((1 / (Tr)) - (1 / (Ta)))) #arrhenius equation
+        #MTTF estimation based on the arrhenius equation that includes temperature
+        MTTF = MTTFref / AF
+        MTTFchip = MTTF / u
+        #estilation of the pfail using Weibull distribution
+        P_Fail=1-sym.exp(-t/MTTFchip**b)
+
+        return P_Fail.evalf(subs={t: time}), MTTFchip.evalf(subs={t: time})
+
         
    # def Drone_Risk_Calc(self.time)
         
