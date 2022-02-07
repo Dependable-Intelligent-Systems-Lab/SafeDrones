@@ -49,6 +49,31 @@ def test_bfrc():
     
     return True
 
+def test_cfrc():
+    
+    MTTFref_in = 400
+    Tr = 51
+    Ta = 65
+    u = 1
+    b = 1
+    time_in = 100
+    
+    THRESHOLD = 0.01
+    
+    TRUE_LABELS_p_fail = 0.225482713742509
+    TRUE_LABELS_MTTF = 391.365996284893
+    
+    eval = SafeDrones()
+    
+    P_Fail, MTTF= eval.Chip_MTTF_Model(MTTFref_in, Tr, Ta, u, b, time_in)
+    
+    if (abs(P_Fail - TRUE_LABELS_p_fail) > THRESHOLD) or (abs(MTTF - TRUE_LABELS_MTTF) > THRESHOLD):
+        print("CFRC Test Failed for test input: ", MTTFref_in, Tr, Ta, u, b, time_in)
+        return False
+    print("CFRC tests passed.")
+    
+    return True
+
 
 class TestSafeDroneMethods(unittest.TestCase):
     def testing_motor_failure_risk(self):
@@ -64,6 +89,13 @@ class TestSafeDroneMethods(unittest.TestCase):
         """
         print("Testing Battery Failure Risk Calc . . . . .")
         self.assertTrue(test_bfrc())
+    
+    def testing_chip_failure_risk(self):
+        """
+        Testing chip failure risk prediction.
+        """
+        print("Testing chip Failure Risk . . . . .")
+        self.assertTrue(test_cfrc())
 
 if __name__ == '__main__':
     unittest.main()
