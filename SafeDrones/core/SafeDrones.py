@@ -190,33 +190,29 @@ class SafeDrones:
     # def Communication_Failure_Risk_Calc(self.CommStatus, self.Comm_Lambda, self.time)
 
     #     To be completed...
-        
-    # def Battery_Degradation_Risk_Calc(self.BattStatus, self.Batt_Lambda, self.time)
 
-    #     To be completed...
-
-    def Battery_Failure_Risk_Calc(self, BatteryStatus, time, Lambda = 0.001, alpha = 0.008, beta = 0.007, Battery_degradation_rate = 0.0064):
+    def Battery_Failure_Risk_Calc(self, BatteryLevel, time, Lambda = 0.001, alpha = 0.008, beta = 0.007, Battery_degradation_rate = 0.0064):
 
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # Program Name : Markov-based Drone's Reliability and MTTF Estimator      %
         # Author       : Koorosh Aslansefat                                       %
-        # Version      : 1.0.1                                                    %
+        # Version      : 1.0.2                                                    %
         # Description  : A Markov Process-Based Approach for Reliability          %
         #                Evaluation of the Battery System for Drones              %
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         '''
         Provided Markov model is from the following paper:
+        
         Kabir, S., Aslansefat, K., Sorokos, I., Papadopoulos, Y., & Gheraibia, Y. (2019, October). 
-         A conceptual framework to incorporate complex basic events in HiP-HOPS. 
-         In International Symposium on Model-Based Safety and Assessment (pp. 109-124). Springer, Cham.
-
-        Battery Status is an integer between 0 and 3. 0 means leass than 25% charged or 
-        fully decharged and 3 means  75% up to fully charged. 
+        A conceptual framework to incorporate complex basic events in HiP-HOPS. 
+        In International Symposium on Model-Based Safety and Assessment (pp. 109-124). Springer, Cham.
+        
+        BatteryLevel: is an integer between 0 and 100. 0 means no charge and 100 means fully charged. 
+        
         Lambda: Failure Rate of the Battery System including Battery, voltage regulator and voltage/current meter.
+        
         alpha and beta: Are charge and discharge rates.
-
-        ## Importing Required Libraries
         '''
         
         import numpy as np  # linear algebra
@@ -229,7 +225,16 @@ class SafeDrones:
         b = beta
         d = Battery_degradation_rate
         L = Lambda
-
+        
+        if BatteryLevel <= 25:
+            BatteryStatus = 0
+        elif BatteryLevel > 25 & BatteryLevel <= 50:
+            BatteryStatus = 1
+        elif BatteryLevel > 50 & BatteryLevel <= 75:        
+            BatteryStatus = 2
+        elif BatteryLevel > 75 & BatteryLevel <= 100:
+            BatteryStatus = 3
+            
         if BatteryStatus == 3:
             P0_Battery = sym.Matrix([[1],[0],[0],[0],[0],[0],[0],[0]])
             Sflag = 5
