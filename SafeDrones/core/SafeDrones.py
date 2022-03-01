@@ -313,9 +313,18 @@ class SafeDrones:
 
         return P_Fail.evalf(subs={t: time}), MTTFchip.evalf(subs={t: time})
 
-        
-   # def Drone_Risk_Calc(self.time)
-        
-   #     To be completed based on the Fault Tree Analysis of the whole Drone
-
-    
+        def Drone_Risk_Calc(self.time):
+            
+        import numpy as np
+            
+            P_Fail_Motor, MTTF_Motor = Motor_Failure_Risk_Calc([1,1,1,1,1,1], 'PNPNPN', 0.001, 100)
+            
+            P_Fail_Battery, MTTF_Battery = Battery_Failure_Risk_Calc(80, 100)
+            
+            P_Fail_Processor, MTTF_Processor = Chip_MTTF_Model(400, 30, 50, 1, 1,100)
+            
+            P_Fail_Total = 1 - (1 - P_Fail_Motor) * (1 - P_Fail_Battery) * (1 - P_Fail_Processor) 
+            
+            MTTF_Total = np.min([MTTF_Motor, MTTF_Battery, MTTF_Processor])
+            
+            return P_Fail_Total, MTTF_Total
