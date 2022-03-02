@@ -9,7 +9,9 @@ class SafeDrones:
         # Observasions or Symptoms from Diagnosis System
         self.MotorStatus = None
         self.CommStatus = None
-        self.BattStatus = None
+        self.BattLvl = None
+        self.alpha = None
+        self.beta = None
         
         # Drone Settings
         self.Motors_Configuration = None
@@ -18,12 +20,52 @@ class SafeDrones:
         self.Motors_Lambda = None
         self.Comm_Lambda = None
         self.Batt_Lambda = None
+        self.Battery_degradation_rate = None
+        self.MTTFref = None
+        self.Tr = None
+        self.Ta = None
+        self.u = None
+        self.b = None
         
         # Mission Time
         self.time = None
         
+        self.Set_Variables()
 
-    def Motor_Failure_Risk_Calc(self, MotorStatus, Motors_Configuration, Motors_Lambda, time):
+    def Set_Variables(self, MotorStatus=[1,1,1,1,1,1], Motors_Configuration='PNPNPN',\
+            Motors_Lambda = 0.001, Batt_Lambda = 0.001, alpha = 0.008, beta = 0.007, \
+            Battery_degradation_rate = 0.0064, BatteryLevel=80, MTTFref=400, \
+            Tr=30, Ta=50, u=1,b=1, time=100, ):
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # Version      : 1.0.0                                                    %
+        # Description  : set variables used in the program                        %
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # Observasions or Symptoms from Diagnosis System
+        self.MotorStatus = MotorStatus
+        self.CommStatus = None
+        self.BattLvl = BatteryLevel
+        self.alpha = alpha
+        self.beta = beta
+        
+        # Drone Settings
+        self.Motors_Configuration = Motors_Configuration
+        
+        # Defining Failure Rates
+        self.Motors_Lambda = Motors_Lambda
+        self.Comm_Lambda = None
+        self.Batt_Lambda = Batt_Lambda
+        self.Battery_degradation_rate = Battery_degradation_rate
+        self.MTTFref = MTTFref
+        self.Tr = Tr
+        self.Ta = Ta
+        self.u = u
+        self.b = b
+        
+        # Mission Time
+        self.time = time
+        
+
+    def Motor_Failure_Risk_Calc(self, MotorStatus=None, Motors_Configuration=None, Motors_Lambda=None, time=None):
 
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # Program Name : Markov-based Drone's Reliability and MTTF Estimator      %
@@ -50,6 +92,15 @@ class SafeDrones:
         import numpy as np # linear algebra
         import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
         import sympy as sym
+        
+        if MotorStatus is None:
+            MotorStatus = self.MotorStatus
+        if Motors_Configuration is None:
+            Motors_Configuration = self.Motors_Configuration
+        if Motors_Lambda is None:
+            Motors_Lambda = self.Motors_Lambda
+        if time is None:
+            time = self.time
 
         L = sym.Symbol('L')
         t = sym.Symbol('t')
@@ -191,7 +242,7 @@ class SafeDrones:
 
     #     To be completed...
 
-    def Battery_Failure_Risk_Calc(self, BatteryLevel, time, Lambda = 0.001, alpha = 0.008, beta = 0.007, Battery_degradation_rate = 0.0064):
+    def Battery_Failure_Risk_Calc(self, BatteryLevel=None, time=None, Lambda = None, alpha = None, beta = None, Battery_degradation_rate = None):
 
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # Program Name : Markov-based Drone's Reliability and MTTF Estimator      %
@@ -218,6 +269,19 @@ class SafeDrones:
         import numpy as np  # linear algebra
         import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
         import sympy as sym # Symbolic Calculation
+        
+        if BatteryLevel is None:
+            BatteryLevel = self.BattLvl
+        if Battery_degradation_rate is None:
+            Battery_degradation_rate = self.Battery_degradation_rate 
+        if beta is None:
+            beta = self.beta
+        if alpha is None:
+            alpha = self.alpha
+        if Lambda is None:
+            Lambda = self.Batt_Lambda
+        if time is None:
+            time = self.time
 
         t = sym.Symbol('t')
 
@@ -234,7 +298,7 @@ class SafeDrones:
             BatteryStatus = 2
         elif BatteryLevel > 75 & BatteryLevel <= 100:
             BatteryStatus = 3
-            
+        
         if BatteryStatus == 3:
             P0_Battery = sym.Matrix([[1],[0],[0],[0],[0],[0],[0],[0]])
             Sflag = 5
@@ -247,35 +311,39 @@ class SafeDrones:
         else:
             P_Fail = 1
             MTTF = 0
+            
+        if BatteryStatus != 0:
+        
+            M_Battery = sym.Matrix([[-L-a-d,  b,       0,  0,       0,  0, 0, 0],
+                                    [     a, -b,       0,  0,       0,  0, 0, 0],
+                                    [     d,  0,  -L-a-d,  b,       0,  0, 0, 0],
+                                    [     0,  0,       a, -b,       0,  0, 0, 0],
+                                    [     0,  0,       d,  0,  -L-a-d,  b, 0, 0],
+                                    [     0,  0,       0,  0,       a, -b, 0, 0],
+                                    [     0,  0,       0,  0,       d,  0, 0, 0],
+                                    [     L,  0,       L,  0,       L,  0, 0, 0]])  
 
-        M_Battery = sym.Matrix([[-L-a-d,  b,       0,  0,       0,  0, 0, 0],
-                                [     a, -b,       0,  0,       0,  0, 0, 0],
-                                [     d,  0,  -L-a-d,  b,       0,  0, 0, 0],
-                                [     0,  0,       a, -b,       0,  0, 0, 0],
-                                [     0,  0,       d,  0,  -L-a-d,  b, 0, 0],
-                                [     0,  0,       0,  0,       a, -b, 0, 0],
-                                [     0,  0,       0,  0,       d,  0, 0, 0],
-                                [     L,  0,       L,  0,       L,  0, 0, 0]])  
+            P_Battery = sym.exp(M_Battery*t)*P0_Battery
 
-        P_Battery = sym.exp(M_Battery*t)*P0_Battery
+            P_Battery_Fail = P_Battery[-1] + P_Battery[-2]
 
-        P_Battery_Fail = P_Battery[-1] + P_Battery[-2]
+            N_Battery = sym.Matrix([[-L-a-d,  b,       0,  0,       0,  0],
+                                    [     a, -b,       0,  0,       0,  0],
+                                    [     d,  0,  -L-a-d,  b,       0,  0],
+                                    [     0,  0,       a, -b,       0,  0],
+                                    [     0,  0,       d,  0,  -L-a-d,  b],
+                                    [     0,  0,       0,  0,       a, -b]])
 
-        N_Battery = sym.Matrix([[-L-a-d,  b,       0,  0,       0,  0],
-                                [     a, -b,       0,  0,       0,  0],
-                                [     d,  0,  -L-a-d,  b,       0,  0],
-                                [     0,  0,       a, -b,       0,  0],
-                                [     0,  0,       d,  0,  -L-a-d,  b],
-                                [     0,  0,       0,  0,       a, -b]])
+            tt = -1*N_Battery.inv()
+            MTTF = sum(tt[Sflag,:])
 
-        tt = -1*N_Battery.inv()
-        MTTF = sum(tt[Sflag,:])
-
-        return P_Battery_Fail.evalf(subs={t: time}), MTTF.evalf(subs={t: time})
+            return P_Battery_Fail.evalf(subs={t: time}), MTTF.evalf(subs={t: time})
+        else:
+            return P_Fail, MTTF
     
     
     #Chip MTTF and Pfail Model estimation based on the temperature. The model uses arrhenious function to estimate the MTTF
-    def Chip_MTTF_Model(self,MTTFref, Tr, Ta, u,b, time):
+    def Chip_MTTF_Model(self,MTTFref=None, Tr=None, Ta = None, u=None,b = None, time = None):
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # Program Name : Chip MTTF estimation model based on temperature          %
         # Author       : Panagiota Nikolaou                                       %
@@ -298,6 +366,19 @@ class SafeDrones:
 
         import math
         import sympy as sym  # Symbolic Calculation
+        
+        if MTTFref is None:
+            MTTFref = self.MTTFref
+        if Tr is None:
+            Tr = self.Tr
+        if Ta is None:
+            Ta = self.Ta
+        if u is None:
+            u = self.u
+        if b is None:
+            b = self.b
+        if time is None:
+            time = self.time
 
         t = sym.Symbol('t') # t is used for the time
         Ea = 0.3
@@ -313,18 +394,18 @@ class SafeDrones:
 
         return P_Fail.evalf(subs={t: time}), MTTFchip.evalf(subs={t: time})
 
-        def Drone_Risk_Calc(time):
+    def Drone_Risk_Calc(self):
             
         import numpy as np
             
-            P_Fail_Motor, MTTF_Motor = Motor_Failure_Risk_Calc([1,1,1,1,1,1], 'PNPNPN', 0.001, 100)
-            
-            P_Fail_Battery, MTTF_Battery = Battery_Failure_Risk_Calc(80, 100)
-            
-            P_Fail_Processor, MTTF_Processor = Chip_MTTF_Model(400, 30, 50, 1, 1,100)
-            
-            P_Fail_Total = 1 - (1 - P_Fail_Motor) * (1 - P_Fail_Battery) * (1 - P_Fail_Processor) 
-            
-            MTTF_Total = np.min([MTTF_Motor, MTTF_Battery, MTTF_Processor])
-            
-            return P_Fail_Total, MTTF_Total
+        P_Fail_Motor, MTTF_Motor = self.Motor_Failure_Risk_Calc(self.MotorStatus, self.Motors_Configuration, self.Motors_Lambda, self.time)
+        
+        P_Fail_Battery, MTTF_Battery = self.Battery_Failure_Risk_Calc(self.BattLvl, self.time)
+        
+        P_Fail_Processor, MTTF_Processor = self.Chip_MTTF_Model(self.MTTFref, self.Tr, self.Ta, self.u, self.b, self.time)
+        
+        P_Fail_Total = 1 - (1 - P_Fail_Motor) * (1 - P_Fail_Battery) * (1 - P_Fail_Processor) 
+        
+        MTTF_Total = np.min([MTTF_Motor, MTTF_Battery, MTTF_Processor])
+        
+        return P_Fail_Total, MTTF_Total

@@ -30,22 +30,40 @@ def test_mfrc():
     
 def test_bfrc():
     
-    input_BatteryStatus = 3
+    input_BatteryLvl = 80
     input_time = 100
     
-    TRUE_LABELS_p_fail = 0.0864154183556407
-    TRUE_LABELS_MTTF = 949.916941881880
+    TRUE_LABELS_p_fail = 0.406254458242660
+    TRUE_LABELS_MTTF = 451.737451737452
     
     THRESHOLD = 0.01
     
     eval = SafeDrones()
     
-    P_Fail, MTTF = eval.Battery_Failure_Risk_Calc(input_BatteryStatus, input_time)
+    P_Fail, MTTF = eval.Battery_Failure_Risk_Calc(input_BatteryLvl, input_time)
     
     if (abs(P_Fail - TRUE_LABELS_p_fail) > THRESHOLD) or (abs(MTTF - TRUE_LABELS_MTTF) > THRESHOLD):
-        print("BFRC Test Failed for test input: ", input_BatteryStatus)
+        print("BFRC Test Failed for test input: ", input_BatteryLvl)
         return False
     print("BFRC tests passed.")
+    
+    return True
+
+def test_drc():
+    
+    TRUE_LABELS_p_fail = 0.568003741219376
+    TRUE_LABELS_MTTF = 373.370548822240
+    
+    THRESHOLD = 0.01
+    
+    eval = SafeDrones()
+    
+    P_Fail, MTTF = eval.Drone_Risk_Calc()
+    
+    if (abs(P_Fail - TRUE_LABELS_p_fail) > THRESHOLD) or (abs(MTTF - TRUE_LABELS_MTTF) > THRESHOLD):
+        print("Drone risk calculation Test Failed for test input: ")
+        return False
+    print("Drone risk calculation tests passed.")
     
     return True
 
@@ -96,6 +114,13 @@ class TestSafeDroneMethods(unittest.TestCase):
         """
         print("Testing chip Failure Risk . . . . .")
         self.assertTrue(test_cfrc())
+    
+    def testing_drone_failure_risk(self):
+        """
+        Testing drone failure risk prediction.
+        """
+        print("Testing drone Failure Risk . . . . .")
+        self.assertTrue(test_drc())
 
 if __name__ == '__main__':
     unittest.main()
