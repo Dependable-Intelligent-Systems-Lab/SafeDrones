@@ -313,7 +313,7 @@ class SafeDrones:
 
         return P_Fail.evalf(subs={t: time}), MTTFchip.evalf(subs={t: time})
 
-        def Drone_Risk_Calc(self.time):
+        def Drone_Risk_Calc(time):
             
         import numpy as np
             
