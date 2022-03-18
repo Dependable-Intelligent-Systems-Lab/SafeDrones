@@ -292,11 +292,11 @@ class SafeDrones:
         
         if BatteryLevel <= 25:
             BatteryStatus = 0
-        elif BatteryLevel > 25 & BatteryLevel <= 50:
+        elif BatteryLevel > 25 and BatteryLevel <= 50:
             BatteryStatus = 1
-        elif BatteryLevel > 50 & BatteryLevel <= 75:        
+        elif BatteryLevel > 50 and BatteryLevel <= 75:        
             BatteryStatus = 2
-        elif BatteryLevel > 75 & BatteryLevel <= 100:
+        elif BatteryLevel > 75 and BatteryLevel <= 100:
             BatteryStatus = 3
         
         if BatteryStatus == 3:
