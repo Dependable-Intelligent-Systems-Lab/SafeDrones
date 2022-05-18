@@ -242,7 +242,7 @@ class SafeDrones:
 
     #     To be completed...
 
-    def Battery_Failure_Risk_Calc(self, BatteryLevel=None, time=None, Lambda = None, alpha = None, beta = None, Battery_degradation_rate = None):
+    def Battery_Failure_Risk_Calc_precise(self, BatteryLevel=None, time=None, Lambda = None, alpha = None, beta = None, Battery_degradation_rate = None):
 
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # Program Name : Markov-based Drone's Reliability and MTTF Estimator      %
@@ -253,6 +253,8 @@ class SafeDrones:
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         '''
+        This function computes precise probability of failure. But it takes longer. 
+
         Provided Markov model is from the following paper:
         
         Kabir, S., Aslansefat, K., Sorokos, I., Papadopoulos, Y., & Gheraibia, Y. (2019, October). 
@@ -266,6 +268,83 @@ class SafeDrones:
         alpha and beta: Are charge and discharge rates.
         '''
         
+        import numpy as np  # linear algebra
+        import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+        import sympy as sym # Symbolic Calculation
+        
+        if BatteryLevel is None:
+            BatteryLevel = self.BattLvl
+        if Battery_degradation_rate is None:
+            Battery_degradation_rate = self.Battery_degradation_rate 
+        if beta is None:
+            beta = self.beta
+        if alpha is None:
+            alpha = self.alpha
+        if Lambda is None:
+            Lambda = self.Batt_Lambda
+        if time is None:
+            time = self.time
+
+        t = sym.Symbol('t')
+
+        a = alpha
+        b = beta
+        d = Battery_degradation_rate
+        L = Lambda
+        
+        if BatteryLevel <= 25:
+            BatteryStatus = 0
+        elif BatteryLevel > 25 and BatteryLevel <= 50:
+            BatteryStatus = 1
+        elif BatteryLevel > 50 and BatteryLevel <= 75:        
+            BatteryStatus = 2
+        elif BatteryLevel > 75 and BatteryLevel <= 100:
+            BatteryStatus = 3
+        
+        if BatteryStatus == 3:
+            P0_Battery = sym.Matrix([[1],[0],[0],[0],[0],[0],[0],[0]])
+            Sflag = 5
+        elif BatteryStatus == 2:
+            P0_Battery = sym.Matrix([[0],[0],[1],[0],[0],[0],[0],[0]])
+            Sflag = 3
+        elif BatteryStatus == 1:
+            P0_Battery = sym.Matrix([[0],[0],[0],[0],[1],[0],[0],[0]])
+            Sflag = 1
+        else:
+            P_Fail = 1
+            MTTF = 0
+            
+        if BatteryStatus != 0:
+        
+            M_Battery = sym.Matrix([[-L-a-d,  b,       0,  0,       0,  0, 0, 0],
+                                    [     a, -b,       0,  0,       0,  0, 0, 0],
+                                    [     d,  0,  -L-a-d,  b,       0,  0, 0, 0],
+                                    [     0,  0,       a, -b,       0,  0, 0, 0],
+                                    [     0,  0,       d,  0,  -L-a-d,  b, 0, 0],
+                                    [     0,  0,       0,  0,       a, -b, 0, 0],
+                                    [     0,  0,       0,  0,       d,  0, 0, 0],
+                                    [     L,  0,       L,  0,       L,  0, 0, 0]])  
+            
+            
+            P_Battery = sym.exp(M_Battery*t)*P0_Battery
+
+            P_Battery_Fail = P_Battery[-1] + P_Battery[-2]
+
+            N_Battery = sym.Matrix([[-L-a-d,  b,       0,  0,       0,  0],
+                                    [     a, -b,       0,  0,       0,  0],
+                                    [     d,  0,  -L-a-d,  b,       0,  0],
+                                    [     0,  0,       a, -b,       0,  0],
+                                    [     0,  0,       d,  0,  -L-a-d,  b],
+                                    [     0,  0,       0,  0,       a, -b]])
+
+
+            tt = -1*N_Battery.inv()
+            MTTF = sum(tt[Sflag,:])
+
+            return P_Battery_Fail.evalf(subs={t: time}), MTTF.evalf(subs={t: time})
+        else:
+            return P_Fail, MTTF
+        '''
         import numpy as np  # linear algebra
         import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
         import sympy as sym # Symbolic Calculation
@@ -340,8 +419,113 @@ class SafeDrones:
             return P_Battery_Fail.evalf(subs={t: time}), MTTF.evalf(subs={t: time})
         else:
             return P_Fail, MTTF
+            '''
     
-    
+    def Battery_Failure_Risk_Calc(self, BatteryLevel=None, time=None, Lambda = None, alpha = None, beta = None, Battery_degradation_rate = None):
+
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # Program Name : Markov-based Drone's Reliability and MTTF Estimator      %
+        # Author       : Koorosh Aslansefat, Akram                                       %
+        # Version      : 1.0.2                                                    %
+        # Description  : A Markov Process-Based Approach for Reliability          %
+        #                Evaluation of the Battery System for Drones              %
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        '''
+        This function computes approximate probability of failure. But it is quick.
+
+        Provided Markov model is from the following paper:
+        
+        Kabir, S., Aslansefat, K., Sorokos, I., Papadopoulos, Y., & Gheraibia, Y. (2019, October). 
+        A conceptual framework to incorporate complex basic events in HiP-HOPS. 
+        In International Symposium on Model-Based Safety and Assessment (pp. 109-124). Springer, Cham.
+        
+        BatteryLevel: is an integer between 0 and 100. 0 means no charge and 100 means fully charged. 
+        
+        Lambda: Failure Rate of the Battery System including Battery, voltage regulator and voltage/current meter.
+        
+        alpha and beta: Are charge and discharge rates.
+        '''
+        
+        import numpy as np  # linear algebra
+        import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+        import sympy as sym # Symbolic Calculation
+        from scipy.linalg import expm
+
+        
+        if BatteryLevel is None:
+            BatteryLevel = self.BattLvl
+        if Battery_degradation_rate is None:
+            Battery_degradation_rate = self.Battery_degradation_rate 
+        if beta is None:
+            beta = self.beta
+        if alpha is None:
+            alpha = self.alpha
+        if Lambda is None:
+            Lambda = self.Batt_Lambda
+        if time is None:
+            time = self.time
+
+        t = sym.Symbol('t')
+
+        a = alpha
+        b = beta
+        d = Battery_degradation_rate
+        L = Lambda
+        
+        if BatteryLevel <= 25:
+            BatteryStatus = 0
+        elif BatteryLevel > 25 and BatteryLevel <= 50:
+            BatteryStatus = 1
+        elif BatteryLevel > 50 and BatteryLevel <= 75:        
+            BatteryStatus = 2
+        elif BatteryLevel > 75 and BatteryLevel <= 100:
+            BatteryStatus = 3
+        
+        if BatteryStatus == 3:
+            P0_Battery = np.matrix([[1],[0],[0],[0],[0],[0],[0],[0]])
+            Sflag = 5
+        elif BatteryStatus == 2:
+            P0_Battery = np.matrix([[0],[0],[1],[0],[0],[0],[0],[0]])
+            Sflag = 3
+        elif BatteryStatus == 1:
+            P0_Battery = np.matrix([[0],[0],[0],[0],[1],[0],[0],[0]])
+            Sflag = 1
+        else:
+            P_Fail = 1
+            MTTF = 0
+        
+        P0_Battery = P0_Battery.astype(np.float64)
+
+        if BatteryStatus != 0:
+        
+            M_Battery = np.matrix([[-L-a-d,  b,       0,  0,       0,  0, 0, 0],
+                                    [     a, -b,       0,  0,       0,  0, 0, 0],
+                                    [     d,  0,  -L-a-d,  b,       0,  0, 0, 0],
+                                    [     0,  0,       a, -b,       0,  0, 0, 0],
+                                    [     0,  0,       d,  0,  -L-a-d,  b, 0, 0],
+                                    [     0,  0,       0,  0,       a, -b, 0, 0],
+                                    [     0,  0,       0,  0,       d,  0, 0, 0],
+                                    [     L,  0,       L,  0,       L,  0, 0, 0]], dtype=np.float64) 
+            
+
+            P_Battery1 = expm(M_Battery*np.float64(time))*P0_Battery
+
+            P_Battery_Fail = P_Battery1[-1] + P_Battery1[-2]
+
+            N_Battery = np.matrix([[-L-a-d,  b,       0,  0,       0,  0],
+                                    [     a, -b,       0,  0,       0,  0],
+                                    [     d,  0,  -L-a-d,  b,       0,  0],
+                                    [     0,  0,       a, -b,       0,  0],
+                                    [     0,  0,       d,  0,  -L-a-d,  b],
+                                    [     0,  0,       0,  0,       a, -b]], dtype=np.float64) 
+
+            gg = np.linalg.inv(N_Battery)
+            tt = -1*gg
+            MTTF = np.sum(tt[Sflag,:])
+
+        return P_Battery_Fail[0, 0], MTTF
+
     #Chip MTTF and Pfail Model estimation based on the temperature. The model uses arrhenious function to estimate the MTTF
     def Chip_MTTF_Model(self,MTTFref=None, Tr=None, Ta = None, u=None,b = None, time = None):
         # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
