@@ -1,16 +1,15 @@
 <p align="left"> </p>
 
  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
-  <a href="https://standardjs.com"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="Standard - \Python Style Guide"></a>
+ <a href="https://standardjs.com"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="Standard - \Python Style Guide"></a>
 
-<p align="center">
- <img src="https://github.com/koo-ec/Reliability_Multirotor_Drones/blob/master/SafeDrones_Logo.png" alt="SafeDrones_Logo"> </p>
+<p align="center"><img src="https://github.com/koo-ec/Reliability_Multirotor_Drones/blob/master/SafeDrones_Logo.png" alt="SafeDrones_Logo"> </p>
 
 # SafeDrones
 <p align = 'justified'>A Framework for Reliability/Safety Modelling and Evaluation of <b>Multicopters (Multi-rotor Drones)</b> and <b>Electric powered Vertical TakeOff and Landing (eVTOL)</b> Aircrafts.</p>
  
 <p align="center">
- <img src="https://github.com/koo-ec/SafeDrones/blob/master/Figures/EHANG_SafeDrones_v5.gif" alt="Ehang, SafeDrones, Safety, reliability, Safe flight, arial vehicles, evtol">
+ <img src="https://github.com/Dependable-Intelligent-Systems-Lab/SafeDrones/blob/master/Figures/EHANG_SafeDrones_v5.gif" alt="Ehang, SafeDrones, Safety, reliability, Safe flight, arial vehicles, evtol">
 </p>
  
 ## Markov Models
