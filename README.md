@@ -9,7 +9,7 @@
 <p align = 'justified'>A Framework for Reliability/Safety Modelling and Evaluation of <b>Multicopters (Multi-rotor Drones)</b> and <b>Electric powered Vertical TakeOff and Landing (eVTOL)</b> Aircrafts.</p>
  
 <p align="center">
- <img src="https://ibb.co/jgNd61y" alt="Ehang, SafeDrones, Safety, reliability, Safe flight, arial vehicles, evtol">
+ <img src="SafeDrones/Figures/EHANG_SafeDrones_v5.gif" alt="Ehang, SafeDrones, Safety, reliability, Safe flight, arial vehicles, evtol">
 </p>
  
 ## Markov Models
