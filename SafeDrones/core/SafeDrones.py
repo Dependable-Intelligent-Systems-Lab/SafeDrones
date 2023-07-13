@@ -578,6 +578,38 @@ class SafeDrones:
 
         return P_Fail.evalf(subs={t: time}), MTTFchip.evalf(subs={t: time})
 
+    def GPS_Failure_Risk_Calc(self.SatStatus, self.GPS_Lambda, self.time):
+        L = self.GPS_Lambda
+        t = self.time
+    
+        M = np.array([[-14*L,     0,     0,     0,     0,     0,     0,     0,    0],
+                      [ 14*L, -13*L,     0,     0,     0,     0,     0,     0,    0],
+                      [    0,  13*L, -12*L,     0,     0,     0,     0,     0,    0],
+                      [    0,     0,  12*L, -11*L,     0,     0,     0,     0,    0],
+                      [    0,     0,     0,  11*L, -10*L,     0,     0,     0,    0],
+                      [    0,     0,     0,     0,  10*L,  -9*L,     0,     0,    0],
+                      [    0,     0,     0,     0,     0,   9*L,  -8*L,     0,    0],
+                      [    0,     0,     0,     0,     0,     0,   8*L,  -7*L,    0],
+                      [    0,     0,     0,     0,     0,     0,     0,   7*L,    0]])
+    
+        P = np.dot(expm(M*t), self.SatStatus)
+        P_Fail = P[-1]
+    
+        N = np.array([[-14*L,     0,     0,     0,     0,     0,     0,     0],
+                      [ 14*L, -13*L,     0,     0,     0,     0,     0,     0],
+                      [    0,  13*L, -12*L,     0,     0,     0,     0,     0],
+                      [    0,     0,  12*L, -11*L,     0,     0,     0,     0],
+                      [    0,     0,     0,  11*L, -10*L,     0,     0,     0],
+                      [    0,     0,     0,     0,  10*L,  -9*L,     0,     0],
+                      [    0,     0,     0,     0,     0,   9*L,  -8*L,     0],
+                      [    0,     0,     0,     0,     0,     0,   8*L,  -7*L]])
+    
+        Time_Symbolic = np.sum(np.sum(-1.*np.linalg.inv(N), axis=1)*(self.SatStatus[:8]))
+    
+        MTTF = Time_Symbolic
+    
+        return P_Fail, MTTF
+
     def Drone_Risk_Calc(self):
             
         import numpy as np
