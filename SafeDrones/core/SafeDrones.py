@@ -610,6 +610,26 @@ class SafeDrones:
     
         return P_Fail, MTTF
 
+    def calculate_collision_risk(uav_1_trajectory, uav_2_trajectory, self.danger_threshold, self.collision_threshold):
+        # Check that both trajectories have the same length
+        assert len(uav_1_trajectory) == len(uav_2_trajectory), "Trajectories must have the same length"
+    
+        danger_zone_count = 0
+        collision_zone_count = 0
+    
+        for point_1, point_2 in zip(uav_1_trajectory, uav_2_trajectory):
+            distance = np.linalg.norm(np.array(point_1) - np.array(point_2))
+            
+            if distance < collision_threshold:
+                collision_zone_count += 1
+            elif distance < danger_threshold:
+                danger_zone_count += 1
+    
+        danger_zone_risk = danger_zone_count / len(uav_1_trajectory)
+        collision_zone_risk = collision_zone_count / len(uav_1_trajectory)
+    
+        return danger_zone_risk, collision_zone_risk
+
     def Drone_Risk_Calc(self):
             
         import numpy as np
