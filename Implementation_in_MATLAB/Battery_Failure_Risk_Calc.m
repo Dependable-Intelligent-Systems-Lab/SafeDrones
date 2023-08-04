@@ -20,7 +20,7 @@ function [P_Fail, MTTF] = Battery_Failure_Risk_Calc(BatteryStatus, Lamdba, time,
     % alpha and beta: Are charge and discharge rates.
 
     %%
-    syms L a b d t
+    syms L a b d Fp
     
     a = 0.00078;
     b = 0.00082;
@@ -60,7 +60,7 @@ function [P_Fail, MTTF] = Battery_Failure_Risk_Calc(BatteryStatus, Lamdba, time,
     
     Time_Symbolic = sum(sum(-1.*inv(N),2).*(P0(1:end-1)));
     
-    L = Lamdba;
+    Fp = Lamdba;
     t = time;
     d = battery_degradation_rate;
     a = alpha;
