@@ -109,7 +109,7 @@ class SafeDrones:
 
         if  Motors_Configuration == 'PNPN':
             if len(MotorStatus) > 4:
-                   disp('The MotorStatus vector should match Motors_Configuration vector') 
+                   print('The MotorStatus vector should match Motors_Configuration vector') 
             else:
                 if SysState < 4:
                     P_Fail = 1
@@ -509,7 +509,7 @@ class SafeDrones:
                                     [     L,  0,       L,  0,       L,  0, 0, 0]], dtype=np.float64) 
             
 
-            P_Battery1 = expm(M_Battery*np.float64(time))*P0_Battery
+            P_Battery1 = sym.exp(M_Battery*np.float64(t))*P0_Battery
 
             P_Battery_Fail = P_Battery1[-1] + P_Battery1[-2]
 
