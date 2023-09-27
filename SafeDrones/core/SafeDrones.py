@@ -578,7 +578,7 @@ class SafeDrones:
 
         return P_Fail.evalf(subs={t: time}), MTTFchip.evalf(subs={t: time})
 
-    def GPS_Failure_Risk_Calc(self.SatStatus, self.GPS_Lambda, self.time):
+    def GPS_Failure_Risk_Calc(self):
         L = self.GPS_Lambda
         t = self.time
     
@@ -592,7 +592,8 @@ class SafeDrones:
                       [    0,     0,     0,     0,     0,     0,   8*L,  -7*L,    0],
                       [    0,     0,     0,     0,     0,     0,     0,   7*L,    0]])
     
-        P = np.dot(expm(M*t), self.SatStatus)
+        P = np.dot(sym.exp(M*t), self.SatStatus)
+
         P_Fail = P[-1]
     
         N = np.array([[-14*L,     0,     0,     0,     0,     0,     0,     0],
