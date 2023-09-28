@@ -29,6 +29,9 @@ class SafeDrones:
         
         # Mission Time
         self.time = None
+
+        self.danger_threshold = None
+        self.collision_threshold = None
         
         self.Set_Variables()
 
@@ -611,7 +614,7 @@ class SafeDrones:
     
         return P_Fail, MTTF
 
-    def calculate_collision_risk(uav_1_trajectory, uav_2_trajectory, self.danger_threshold, self.collision_threshold):
+    def calculate_collision_risk(self, uav_1_trajectory, uav_2_trajectory):  # self.danger_threshold, self.collision_threshold
         # Check that both trajectories have the same length
         assert len(uav_1_trajectory) == len(uav_2_trajectory), "Trajectories must have the same length"
     
