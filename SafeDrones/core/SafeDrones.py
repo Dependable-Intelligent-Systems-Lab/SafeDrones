@@ -32,13 +32,14 @@ class SafeDrones:
 
         self.danger_threshold = None
         self.collision_threshold = None
-        
+        self.GPS_Lambda = None
+
         self.Set_Variables()
 
     def Set_Variables(self, MotorStatus=[1,1,1,1,1,1], Motors_Configuration='PNPNPN',\
             Motors_Lambda = 0.001, Batt_Lambda = 0.001, alpha = 0.008, beta = 0.007, \
             Battery_degradation_rate = 0.0064, BatteryLevel=80, MTTFref=400, \
-            Tr=30, Ta=50, u=1,b=1, time=100, ):
+            Tr=30, Ta=50, u=1,b=1, time=100, danger_threshold=2, collision_threshold=0,  GPS_Lambda=0.001):
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # Version      : 1.0.0                                                    %
         # Description  : set variables used in the program                        %
@@ -66,6 +67,11 @@ class SafeDrones:
         
         # Mission Time
         self.time = time
+
+        #Collision related
+        self.danger_threshold = danger_threshold
+        self.collision_threshold = collision_threshold
+        self.GPS_Lambda = GPS_Lambda
         
 
     def Motor_Failure_Risk_Calc(self, MotorStatus=None, Motors_Configuration=None, Motors_Lambda=None, time=None):
@@ -624,9 +630,9 @@ class SafeDrones:
         for point_1, point_2 in zip(uav_1_trajectory, uav_2_trajectory):
             distance = np.linalg.norm(np.array(point_1) - np.array(point_2))
             
-            if distance < collision_threshold:
+            if distance < self.collision_threshold:
                 collision_zone_count += 1
-            elif distance < danger_threshold:
+            elif distance < self.danger_threshold:
                 danger_zone_count += 1
     
         danger_zone_risk = danger_zone_count / len(uav_1_trajectory)
