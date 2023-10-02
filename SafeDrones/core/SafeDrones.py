@@ -33,13 +33,15 @@ class SafeDrones:
         self.danger_threshold = None
         self.collision_threshold = None
         self.GPS_Lambda = None
+        self.SatStatus = None
 
         self.Set_Variables()
 
     def Set_Variables(self, MotorStatus=[1,1,1,1,1,1], Motors_Configuration='PNPNPN',\
             Motors_Lambda = 0.001, Batt_Lambda = 0.001, alpha = 0.008, beta = 0.007, \
             Battery_degradation_rate = 0.0064, BatteryLevel=80, MTTFref=400, \
-            Tr=30, Ta=50, u=1,b=1, time=100, danger_threshold=2, collision_threshold=0,  GPS_Lambda=0.001):
+            Tr=30, Ta=50, u=1,b=1, time=100, danger_threshold=2, collision_threshold=0, \
+            GPS_Lambda=0.001, SatStatus = 0):
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # Version      : 1.0.0                                                    %
         # Description  : set variables used in the program                        %
@@ -72,6 +74,7 @@ class SafeDrones:
         self.danger_threshold = danger_threshold
         self.collision_threshold = collision_threshold
         self.GPS_Lambda = GPS_Lambda
+        self.SatStatus = SatStatus
         
 
     def Motor_Failure_Risk_Calc(self, MotorStatus=None, Motors_Configuration=None, Motors_Lambda=None, time=None):
@@ -587,45 +590,106 @@ class SafeDrones:
 
         return P_Fail.evalf(subs={t: time}), MTTFchip.evalf(subs={t: time})
 
-    def GPS_Failure_Risk_Calc(self):
-        L = self.GPS_Lambda
-        t = self.time
-    
-        M = np.array([[-14*L,     0,     0,     0,     0,     0,     0,     0,    0],
-                      [ 14*L, -13*L,     0,     0,     0,     0,     0,     0,    0],
-                      [    0,  13*L, -12*L,     0,     0,     0,     0,     0,    0],
-                      [    0,     0,  12*L, -11*L,     0,     0,     0,     0,    0],
-                      [    0,     0,     0,  11*L, -10*L,     0,     0,     0,    0],
-                      [    0,     0,     0,     0,  10*L,  -9*L,     0,     0,    0],
-                      [    0,     0,     0,     0,     0,   9*L,  -8*L,     0,    0],
-                      [    0,     0,     0,     0,     0,     0,   8*L,  -7*L,    0],
-                      [    0,     0,     0,     0,     0,     0,     0,   7*L,    0]])
-    
-        P = np.dot(sym.exp(M*t), self.SatStatus)
+    def GPS_Failure_Risk_Calc(self, SatStatus=None, time=None, Lambda = None, ):
 
-        P_Fail = P[-1]
-    
-        N = np.array([[-14*L,     0,     0,     0,     0,     0,     0,     0],
-                      [ 14*L, -13*L,     0,     0,     0,     0,     0,     0],
-                      [    0,  13*L, -12*L,     0,     0,     0,     0,     0],
-                      [    0,     0,  12*L, -11*L,     0,     0,     0,     0],
-                      [    0,     0,     0,  11*L, -10*L,     0,     0,     0],
-                      [    0,     0,     0,     0,  10*L,  -9*L,     0,     0],
-                      [    0,     0,     0,     0,     0,   9*L,  -8*L,     0],
-                      [    0,     0,     0,     0,     0,     0,   8*L,  -7*L]])
-    
-        Time_Symbolic = np.sum(np.sum(-1.*np.linalg.inv(N), axis=1)*(self.SatStatus[:8]))
-    
-        MTTF = Time_Symbolic
-    
-        return P_Fail, MTTF
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        # Program Name : Markov-based Drone's Reliability and MTTF Estimator      %
+        # Author       : Koorosh Aslansefat                                       %
+        # Version      : 1.0.0                                                    %
+        # Description  : A Markov Process-Based Approach for Reliability          %
+        #                Evaluation of the GPS System for Drones                  %
+        #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        '''
+        
+        SatStatus: is an integer between 0 and 11. 0 means no satellite is available and 14 means fully satellite coverage. 
+        
+        Lambda: Failure Rate of the GPS System.
+        
+        time: Time of the mission
+        '''
+        
+        import numpy as np  # linear algebra
+        import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+        import sympy as sym # Symbolic Calculation
+        
+        t = sym.Symbol('t')
+        
+        if SatStatus == None:
+            SatStatus = self.SatStatus
+        if Lambda == None:
+            Lambda = self.GPS_Lambda
+        L = Lambda
 
-    def calculate_collision_risk(self, uav_1_trajectory, uav_2_trajectory):  # self.danger_threshold, self.collision_threshold
+        if SatStatus == 14:
+            P0_GPS = sym.Matrix([[1],[0],[0],[0],[0],[0],[0],[0],[0]])
+            Sflag = 7
+        elif SatStatus == 13:
+            P0_GPS = sym.Matrix([[0],[1],[0],[0],[0],[0],[0],[0],[0]])
+            Sflag = 6
+        elif SatStatus == 12:
+            P0_GPS = sym.Matrix([[0],[0],[1],[0],[0],[0],[0],[0],[0]])
+            Sflag = 5
+        elif SatStatus == 11:
+            P0_GPS = sym.Matrix([[0],[0],[0],[1],[0],[0],[0],[0],[0]])
+            Sflag = 4
+        elif SatStatus == 10:
+            P0_GPS = sym.Matrix([[0],[0],[0],[0],[1],[0],[0],[0],[0]])
+            Sflag = 3
+        elif SatStatus == 9:
+            P0_GPS = sym.Matrix([[0],[0],[0],[0],[0],[1],[0],[0],[0]])
+            Sflag = 2
+        elif SatStatus == 8:
+            P0_GPS = sym.Matrix([[0],[0],[0],[0],[0],[0],[1],[0],[0]])
+            Sflag = 1
+        elif SatStatus == 7:
+            P0_GPS = sym.Matrix([[0],[0],[0],[0],[0],[0],[0],[1],[0]])
+            Sflag = 0
+        else:
+            P_Fail = 1
+            MTTF = 0
+            return P_Fail, MTTF
+
+        M_GPS = sym.Matrix([[-14*L,     0,     0,     0,     0,     0,     0,     0,    0],
+                            [ 14*L, -13*L,     0,     0,     0,     0,     0,     0,    0],
+                            [    0,  13*L, -12*L,     0,     0,     0,     0,     0,    0],
+                            [    0,     0,  12*L, -11*L,     0,     0,     0,     0,    0],
+                            [    0,     0,     0,  11*L, -10*L,     0,     0,     0,    0],
+                            [    0,     0,     0,     0,  10*L,  -9*L,     0,     0,    0],
+                            [    0,     0,     0,     0,     0,   9*L,  -8*L,     0,    0],
+                            [    0,     0,     0,     0,     0,     0,   8*L,  -7*L,    0],
+                            [    0,     0,     0,     0,     0,     0,     0,   7*L,    0]])
+
+        P_GPS = sym.exp(M_GPS*t)*P0_GPS
+
+        P_GPS_Fail = P_GPS[-1]
+
+        N_GPS = sym.Matrix([[-14*L,     0,     0,     0,     0,     0,     0,     0],
+                            [ 14*L, -13*L,     0,     0,     0,     0,     0,     0],
+                            [    0,  13*L, -12*L,     0,     0,     0,     0,     0],
+                            [    0,     0,  12*L, -11*L,     0,     0,     0,     0],
+                            [    0,     0,     0,  11*L, -10*L,     0,     0,     0],
+                            [    0,     0,     0,     0,  10*L,  -9*L,     0,     0],
+                            [    0,     0,     0,     0,     0,   9*L,  -8*L,     0],
+                            [    0,     0,     0,     0,     0,     0,   8*L,  -7*L]])
+        
+        tt = -1*N_GPS.inv()
+        
+        MTTF_GPS = sum(tt[Sflag,:])
+
+        return P_GPS_Fail.evalf(subs={t: time}), MTTF_GPS.evalf(subs={t: time})
+
+    def calculate_collision_risk(self, uav_1_trajectory, uav_2_trajectory, danger_threshold=-1, collision_threshold=-1):  # self.danger_threshold, self.collision_threshold
         # Check that both trajectories have the same length
         assert len(uav_1_trajectory) == len(uav_2_trajectory), "Trajectories must have the same length"
     
         danger_zone_count = 0
         collision_zone_count = 0
+
+        if danger_threshold != -1:
+            self.danger_threshold = danger_threshold
+        if collision_threshold != -1:
+            self.collision_threshold = collision_threshold
     
         for point_1, point_2 in zip(uav_1_trajectory, uav_2_trajectory):
             distance = np.linalg.norm(np.array(point_1) - np.array(point_2))
