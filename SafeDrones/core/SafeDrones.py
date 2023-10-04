@@ -506,6 +506,7 @@ class SafeDrones:
         else:
             P_Fail = 1
             MTTF = 0
+            return P_Fail, MTTF
         
         P0_Battery = P0_Battery.astype(np.float64)
 
@@ -521,7 +522,9 @@ class SafeDrones:
                                     [     L,  0,       L,  0,       L,  0, 0, 0]], dtype=np.float64) 
             
 
-            P_Battery1 = sym.exp(M_Battery*np.float64(t))*P0_Battery
+            # P_Battery1 = sym.exp(M_Battery*np.float64(t))*P0_Battery
+            P_Battery1 = expm(M_Battery*np.float64(time))*P0_Battery
+
 
             P_Battery_Fail = P_Battery1[-1] + P_Battery1[-2]
 
