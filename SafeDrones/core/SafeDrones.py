@@ -593,19 +593,109 @@ class SafeDrones:
 
         return P_Fail.evalf(subs={t: time}), MTTFchip.evalf(subs={t: time})
 
-    def GPS_Failure_Risk_Calc(self, SatStatus=None, time=None, Lambda = None, ):
+    # def GPS_Failure_Risk_Calc(self, SatStatus=None, time=None, Lambda = None, ):
+
+    #     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #     # Program Name : Markov-based Drone's Reliability and MTTF Estimator      %
+    #     # Author       : Koorosh Aslansefat                                       %
+    #     # Version      : 1.0.0                                                    %
+    #     # Description  : A Markov Process-Based Approach for Reliability          %
+    #     #                Evaluation of the GPS System for Drones                  %
+    #     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+    #     '''
+        
+    #     SatStatus: is an integer between 0 and 11. 0 means no satellite is available and 14 means fully satellite coverage. 
+        
+    #     Lambda: Failure Rate of the GPS System.
+        
+    #     time: Time of the mission
+    #     '''
+        
+    #     import numpy as np  # linear algebra
+    #     import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+    #     import sympy as sym # Symbolic Calculation
+        
+    #     t = sym.Symbol('t')
+        
+    #     if SatStatus == None:
+    #         SatStatus = self.SatStatus
+    #     if Lambda == None:
+    #         Lambda = self.GPS_Lambda
+    #     L = Lambda
+
+    #     if SatStatus == 14:
+    #         P0_GPS = sym.Matrix([[1],[0],[0],[0],[0],[0],[0],[0],[0]])
+    #         Sflag = 7
+    #     elif SatStatus == 13:
+    #         P0_GPS = sym.Matrix([[0],[1],[0],[0],[0],[0],[0],[0],[0]])
+    #         Sflag = 6
+    #     elif SatStatus == 12:
+    #         P0_GPS = sym.Matrix([[0],[0],[1],[0],[0],[0],[0],[0],[0]])
+    #         Sflag = 5
+    #     elif SatStatus == 11:
+    #         P0_GPS = sym.Matrix([[0],[0],[0],[1],[0],[0],[0],[0],[0]])
+    #         Sflag = 4
+    #     elif SatStatus == 10:
+    #         P0_GPS = sym.Matrix([[0],[0],[0],[0],[1],[0],[0],[0],[0]])
+    #         Sflag = 3
+    #     elif SatStatus == 9:
+    #         P0_GPS = sym.Matrix([[0],[0],[0],[0],[0],[1],[0],[0],[0]])
+    #         Sflag = 2
+    #     elif SatStatus == 8:
+    #         P0_GPS = sym.Matrix([[0],[0],[0],[0],[0],[0],[1],[0],[0]])
+    #         Sflag = 1
+    #     elif SatStatus == 7:
+    #         P0_GPS = sym.Matrix([[0],[0],[0],[0],[0],[0],[0],[1],[0]])
+    #         Sflag = 0
+    #     else:
+    #         P_Fail = 1
+    #         MTTF = 0
+    #         return P_Fail, MTTF
+
+    #     M_GPS = sym.Matrix([[-14*L,     0,     0,     0,     0,     0,     0,     0,    0],
+    #                         [ 14*L, -13*L,     0,     0,     0,     0,     0,     0,    0],
+    #                         [    0,  13*L, -12*L,     0,     0,     0,     0,     0,    0],
+    #                         [    0,     0,  12*L, -11*L,     0,     0,     0,     0,    0],
+    #                         [    0,     0,     0,  11*L, -10*L,     0,     0,     0,    0],
+    #                         [    0,     0,     0,     0,  10*L,  -9*L,     0,     0,    0],
+    #                         [    0,     0,     0,     0,     0,   9*L,  -8*L,     0,    0],
+    #                         [    0,     0,     0,     0,     0,     0,   8*L,  -7*L,    0],
+    #                         [    0,     0,     0,     0,     0,     0,     0,   7*L,    0]])
+
+    #     P_GPS = sym.exp(M_GPS*t)*P0_GPS
+
+    #     P_GPS_Fail = P_GPS[-1]
+
+    #     N_GPS = sym.Matrix([[-14*L,     0,     0,     0,     0,     0,     0,     0],
+    #                         [ 14*L, -13*L,     0,     0,     0,     0,     0,     0],
+    #                         [    0,  13*L, -12*L,     0,     0,     0,     0,     0],
+    #                         [    0,     0,  12*L, -11*L,     0,     0,     0,     0],
+    #                         [    0,     0,     0,  11*L, -10*L,     0,     0,     0],
+    #                         [    0,     0,     0,     0,  10*L,  -9*L,     0,     0],
+    #                         [    0,     0,     0,     0,     0,   9*L,  -8*L,     0],
+    #                         [    0,     0,     0,     0,     0,     0,   8*L,  -7*L]])
+        
+    #     tt = -1*N_GPS.inv()
+        
+    #     MTTF_GPS = sum(tt[Sflag,:])
+
+    #     return P_GPS_Fail.evalf(subs={t: time}), MTTF_GPS.evalf(subs={t: time})
+
+
+    def GPS_Failure_Risk_Calc(self, SatStatus=None, time=None, Lambda = None, MaxSat = 28, MinSat = 7):
 
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         # Program Name : Markov-based Drone's Reliability and MTTF Estimator      %
         # Author       : Koorosh Aslansefat                                       %
-        # Version      : 1.0.0                                                    %
+        # Version      : 1.0.5                                                    %
         # Description  : A Markov Process-Based Approach for Reliability          %
         #                Evaluation of the GPS System for Drones                  %
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         '''
         
-        SatStatus: is an integer between 0 and 11. 0 means no satellite is available and 14 means fully satellite coverage. 
+        SatStatus: is an integer between 0 and MaxSat. 0 means no satellite is available and 14 means fully satellite coverage. 
         
         Lambda: Failure Rate of the GPS System.
         
@@ -617,71 +707,46 @@ class SafeDrones:
         import sympy as sym # Symbolic Calculation
         
         t = sym.Symbol('t')
-        
-        if SatStatus == None:
-            SatStatus = self.SatStatus
-        if Lambda == None:
-            Lambda = self.GPS_Lambda
         L = Lambda
+        
+        if SatStatus > MaxSat:
+            print("The satellite status can not be more than maximum number of satellites. ")
+            raise ValueError
+            return None, None
 
-        if SatStatus == 14:
-            P0_GPS = sym.Matrix([[1],[0],[0],[0],[0],[0],[0],[0],[0]])
-            Sflag = 7
-        elif SatStatus == 13:
-            P0_GPS = sym.Matrix([[0],[1],[0],[0],[0],[0],[0],[0],[0]])
-            Sflag = 6
-        elif SatStatus == 12:
-            P0_GPS = sym.Matrix([[0],[0],[1],[0],[0],[0],[0],[0],[0]])
-            Sflag = 5
-        elif SatStatus == 11:
-            P0_GPS = sym.Matrix([[0],[0],[0],[1],[0],[0],[0],[0],[0]])
-            Sflag = 4
-        elif SatStatus == 10:
-            P0_GPS = sym.Matrix([[0],[0],[0],[0],[1],[0],[0],[0],[0]])
-            Sflag = 3
-        elif SatStatus == 9:
-            P0_GPS = sym.Matrix([[0],[0],[0],[0],[0],[1],[0],[0],[0]])
-            Sflag = 2
-        elif SatStatus == 8:
-            P0_GPS = sym.Matrix([[0],[0],[0],[0],[0],[0],[1],[0],[0]])
-            Sflag = 1
-        elif SatStatus == 7:
-            P0_GPS = sym.Matrix([[0],[0],[0],[0],[0],[0],[0],[1],[0]])
-            Sflag = 0
+        if MinSat < SatStatus <= MaxSat:
+            P0_GPS = sym.zeros(MaxSat-MinSat+1, 1)
+            P0_GPS[SatStatus - MinSat] = 1
+            Sflag = MaxSat - SatStatus
         else:
             P_Fail = 1
             MTTF = 0
             return P_Fail, MTTF
-
-        M_GPS = sym.Matrix([[-14*L,     0,     0,     0,     0,     0,     0,     0,    0],
-                            [ 14*L, -13*L,     0,     0,     0,     0,     0,     0,    0],
-                            [    0,  13*L, -12*L,     0,     0,     0,     0,     0,    0],
-                            [    0,     0,  12*L, -11*L,     0,     0,     0,     0,    0],
-                            [    0,     0,     0,  11*L, -10*L,     0,     0,     0,    0],
-                            [    0,     0,     0,     0,  10*L,  -9*L,     0,     0,    0],
-                            [    0,     0,     0,     0,     0,   9*L,  -8*L,     0,    0],
-                            [    0,     0,     0,     0,     0,     0,   8*L,  -7*L,    0],
-                            [    0,     0,     0,     0,     0,     0,     0,   7*L,    0]])
-
+        
+        M_GPS_updated = sym.zeros(MaxSat-MinSat+1, MaxSat-MinSat+1)
+        start_value = -1*MaxSat
+        
+        for i in range(MaxSat-MinSat+1):
+            if i == (MaxSat-MinSat):
+                M_GPS_updated[i, i] = (start_value + i) * L
+            else:
+                M_GPS_updated[i, i] = (start_value + i) * L
+                M_GPS_updated[i+1, i] = -(start_value + i) * L 
+                
+        M_GPS = sym.Matrix(M_GPS_updated)
+        
         P_GPS = sym.exp(M_GPS*t)*P0_GPS
 
         P_GPS_Fail = P_GPS[-1]
-
-        N_GPS = sym.Matrix([[-14*L,     0,     0,     0,     0,     0,     0,     0],
-                            [ 14*L, -13*L,     0,     0,     0,     0,     0,     0],
-                            [    0,  13*L, -12*L,     0,     0,     0,     0,     0],
-                            [    0,     0,  12*L, -11*L,     0,     0,     0,     0],
-                            [    0,     0,     0,  11*L, -10*L,     0,     0,     0],
-                            [    0,     0,     0,     0,  10*L,  -9*L,     0,     0],
-                            [    0,     0,     0,     0,     0,   9*L,  -8*L,     0],
-                            [    0,     0,     0,     0,     0,     0,   8*L,  -7*L]])
+        
+        N_GPS = M_GPS[:-1, :-1] 
         
         tt = -1*N_GPS.inv()
         
         MTTF_GPS = sum(tt[Sflag,:])
 
         return P_GPS_Fail.evalf(subs={t: time}), MTTF_GPS.evalf(subs={t: time})
-
+    
     def calculate_collision_risk(self, uav_1_trajectory, uav_2_trajectory, danger_threshold=-1, collision_threshold=-1):  # self.danger_threshold, self.collision_threshold
         # Check that both trajectories have the same length
         assert len(uav_1_trajectory) == len(uav_2_trajectory), "Trajectories must have the same length"
@@ -699,7 +764,7 @@ class SafeDrones:
             
             if distance < self.collision_threshold:
                 collision_zone_count += 1
-            elif distance < self.danger_threshold:
+            if distance < self.danger_threshold:
                 danger_zone_count += 1
     
         danger_zone_risk = danger_zone_count / len(uav_1_trajectory)
