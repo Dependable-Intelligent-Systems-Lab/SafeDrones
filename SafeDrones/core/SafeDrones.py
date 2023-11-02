@@ -791,6 +791,8 @@ class SafeDrones:
         
         t = sym.Symbol('t')
 
+        if Lambda == None:
+            Lambda = self.GPS_Lambda
         L = Lambda
 
         if SatStatus is None:
