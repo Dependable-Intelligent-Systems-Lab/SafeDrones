@@ -772,66 +772,113 @@ class SafeDrones:
     
         return danger_zone_risk, collision_zone_risk
 
-
-    def GPS_Failure_Risk_Calc(self, SatStatus=None, time=None, Lambda = None, MaxSat = 29, MinSat = 17):
+    def GPS_Failure_Risk_Calc(self, SatStatus=None, time=None, Lambda=None, MaxSat=29, MinSat=17):
 
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        # Program Name : Markov-based Drone's Reliability and MTTF Estimator      %
-        # Authors      : Koorosh Aslansefat and Mohammed Naveed Akram             %
-        # Version      : 1.0.6                                                    %
-        # Description  : A Markov Process-Based Approach for Reliability          %
+        # Program Name : k-out-of-n based Reliability and MTTF Estimator          %
+        # Authors      : Koorosh Aslansefat, Mohammed Naveed Akram, Martin Walker %
+        # Version      : 1.0.7                                                    %
+        # Description  : A k-out-of-n-Based Approach for Reliability              %
         #                Evaluation of the GPS System for Drones                  %
         #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         '''
-        SatStatus: is an integer between 0 and MaxSat. 0 means no satellite is available and 14 means fully satellite coverage. 
-        Lambda: Failure Rate of the GPS System.
-        time: Time of the mission
+        SatStatus: is an integer between 0 and MaxSat. 
+        Lambda: Failure Rate of a single GPS satellite/connection.
+        time: Time of the mission.
         '''
-        
-        t = sym.Symbol('t')
 
+        import math
+        
         if Lambda == None:
             Lambda = self.GPS_Lambda
-        L = Lambda
 
-        if SatStatus is None:
-            SatStatus = self.SatStatus
+        p0_fail = 1 - math.exp(-Lambda * time)  # Probability of failure for one satellite connection
+        numSats = SatStatus - MinSat + 1        # Number of satellites until system failure
+        if numSats <= 0:
+            return 1, 0                         # System failure: insufficient satellites
+        k = MinSat
+        n = SatStatus
+
+        # Calculate overall probability of failure
+        p0_success = 1 - p0_fail
+        if k < 0 or k > n:                      # Parameter error
+            return 1, 0
         
-        if MinSat < SatStatus <= MaxSat:
-            P0_GPS = sym.zeros(MaxSat-MinSat+2, 1) # +2 to account for the additional row
-            P0_GPS[MaxSat - SatStatus] = 1
-            Sflag_GPS = (MaxSat-MinSat) - (MaxSat - SatStatus)
-        else:
-            P_Fail = 1
-            MTTF = 0
-            return P_Fail, MTTF
+        p_success = 0
+        for i in range(k, n+1):                 # n is inclusive
+            fac = math.factorial(n) / (math.factorial(i) * math.factorial(n - i))
+            p_success += fac * (p0_success ** i) * (p0_fail ** (n-i))
+        p_fail = 1 - p_success
+
+        # Calculate MTTF
+        mttf = 0
+        for i in range(MinSat, SatStatus+1):
+            mttf += 1/i
+        mttf *= 1/Lambda
+
+        # Return
+        return p_fail, mttf
+
+    # def GPS_Failure_Risk_Calc(self, SatStatus=None, time=None, Lambda = None, MaxSat = 29, MinSat = 17):
+
+    #     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    #     # Program Name : Markov-based Drone's Reliability and MTTF Estimator      %
+    #     # Authors      : Koorosh Aslansefat and Mohammed Naveed Akram             %
+    #     # Version      : 1.0.6                                                    %
+    #     # Description  : A Markov Process-Based Approach for Reliability          %
+    #     #                Evaluation of the GPS System for Drones                  %
+    #     #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        M_GPS_updated = sym.zeros(MaxSat-MinSat+2, MaxSat-MinSat+2) # +2 to account for the additional row and column
-        start_value = -1*MaxSat
+    #     '''
+    #     SatStatus: is an integer between 0 and MaxSat. 0 means no satellite is available and 14 means fully satellite coverage. 
+    #     Lambda: Failure Rate of the GPS System.
+    #     time: Time of the mission
+    #     '''
         
-        for i in range(MaxSat-MinSat+2): # +2 to loop through the additional row
-            if i == MaxSat-MinSat+1: # +1 to account for the additional row
-                M_GPS_updated[i, i] = (start_value + i) * L
-            else:
-                M_GPS_updated[i, i] = (start_value + i) * L
-                M_GPS_updated[i+1, i] = -(start_value + i) * L
+    #     t = sym.Symbol('t')
+
+    #     if Lambda == None:
+    #         Lambda = self.GPS_Lambda
+    #     L = Lambda
+
+    #     if SatStatus is None:
+    #         SatStatus = self.SatStatus
+        
+    #     if MinSat < SatStatus <= MaxSat:
+    #         P0_GPS = sym.zeros(MaxSat-MinSat+2, 1) # +2 to account for the additional row
+    #         P0_GPS[MaxSat - SatStatus] = 1
+    #         Sflag_GPS = (MaxSat-MinSat) - (MaxSat - SatStatus)
+    #     else:
+    #         P_Fail = 1
+    #         MTTF = 0
+    #         return P_Fail, MTTF
+        
+    #     M_GPS_updated = sym.zeros(MaxSat-MinSat+2, MaxSat-MinSat+2) # +2 to account for the additional row and column
+    #     start_value = -1*MaxSat
+        
+    #     for i in range(MaxSat-MinSat+2): # +2 to loop through the additional row
+    #         if i == MaxSat-MinSat+1: # +1 to account for the additional row
+    #             M_GPS_updated[i, i] = (start_value + i) * L
+    #         else:
+    #             M_GPS_updated[i, i] = (start_value + i) * L
+    #             M_GPS_updated[i+1, i] = -(start_value + i) * L
                 
-        M_GPS_updated[-1,-1] = 0
+    #     M_GPS_updated[-1,-1] = 0
                 
-        M_GPS = sym.Matrix(M_GPS_updated)
+    #     M_GPS = sym.Matrix(M_GPS_updated)
         
-        P_GPS = sym.exp(M_GPS*t)*P0_GPS
+    #     P_GPS = sym.exp(M_GPS*t)*P0_GPS
 
-        P_GPS_Fail = P_GPS[-1]
+    #     P_GPS_Fail = P_GPS[-1]
         
-        N_GPS = M_GPS[:-1, :-1] 
+    #     N_GPS = M_GPS[:-1, :-1] 
         
-        tt = -1*N_GPS.inv()
+    #     tt = -1*N_GPS.inv()
         
-        MTTF_GPS = sum(tt[Sflag_GPS,:])
+    #     MTTF_GPS = sum(tt[Sflag_GPS,:])
 
-        return P_GPS_Fail.evalf(subs={t: time}), MTTF_GPS.evalf(subs={t: time})
+    #     return P_GPS_Fail.evalf(subs={t: time}), MTTF_GPS.evalf(subs={t: time})
 
     def Drone_Risk_Calc(self):
             
