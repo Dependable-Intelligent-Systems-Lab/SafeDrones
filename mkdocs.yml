@@ -1,6 +1,6 @@
 site_name: SafeDrones
 site_description: Reliability and safety modelling for multicopters and eVTOL aircraft.
-site_url: https://safedrones.readthedocs.io/
+site_url: https://dependable-intelligent-systems-lab.github.io/SafeDrones/
 repo_name: Dependable-Intelligent-Systems-Lab/SafeDrones
 repo_url: https://github.com/Dependable-Intelligent-Systems-Lab/SafeDrones
 edit_uri: edit/master/docs/
@@ -63,6 +63,9 @@ markdown_extensions:
 
 extra_css:
   - assets/stylesheets/extra.css
+
+extra_javascript:
+  - assets/javascripts/ai-links.js
 
 extra:
   generator: true
