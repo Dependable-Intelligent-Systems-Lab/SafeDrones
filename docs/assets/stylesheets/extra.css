@@ -1,0 +1,51 @@
+:root {
+  --safedrones-gradient-start: #00695c;
+  --safedrones-gradient-end: #00838f;
+}
+
+.hero {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--safedrones-gradient-start) 12%, transparent), color-mix(in srgb, var(--safedrones-gradient-end) 6%, transparent));
+  border: 0.05rem solid var(--md-default-fg-color--lightest);
+  border-radius: 0.6rem;
+  margin: 0 0 1.5rem;
+  padding: 1.4rem 1.6rem 1.6rem;
+}
+
+.hero__logo {
+  display: block;
+  margin: 0 auto 1rem;
+  max-height: 10rem;
+  max-width: min(100%, 34rem);
+  object-fit: contain;
+}
+
+.hero > p {
+  font-size: 0.9rem;
+  max-width: 48rem;
+}
+
+.hero .md-button {
+  margin-right: 0.35rem;
+  margin-top: 0.4rem;
+}
+
+.md-typeset .grid.cards > ul > li {
+  border-radius: 0.4rem;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--md-accent-fg-color);
+  transform: translateY(-0.08rem);
+}
+
+.md-typeset table:not([class]) {
+  border-radius: 0.3rem;
+  overflow: hidden;
+}
+
+@media screen and (max-width: 44.984375em) {
+  .hero {
+    padding: 1rem;
+  }
+}

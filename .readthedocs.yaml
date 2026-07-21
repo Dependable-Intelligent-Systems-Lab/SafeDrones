@@ -10,9 +10,9 @@ build:
   tools:
     python: "3.13"
 
-# Build documentation in the "docs/" directory with Sphinx
-sphinx:
-  configuration: docs/conf.py
+# Build the documentation with MkDocs Material.
+mkdocs:
+  configuration: mkdocs.yml
 
 python:
   install:

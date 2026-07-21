@@ -1,1 +1,4 @@
 *.pyc
+.doc-venv/
+docs/_build/
+site/

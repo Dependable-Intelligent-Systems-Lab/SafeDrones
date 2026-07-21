@@ -1,0 +1,77 @@
+site_name: SafeDrones
+site_description: Reliability and safety modelling for multicopters and eVTOL aircraft.
+site_url: https://safedrones.readthedocs.io/
+repo_name: Dependable-Intelligent-Systems-Lab/SafeDrones
+repo_url: https://github.com/Dependable-Intelligent-Systems-Lab/SafeDrones
+edit_uri: edit/master/docs/
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: en
+  logo: assets/images/logo.png
+  favicon: assets/images/logo.png
+  features:
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.select
+  palette:
+    - scheme: default
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: cyan
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+nav:
+  - Introduction: index.md
+  - Getting started: getting-started.md
+  - Reliability models:
+      - Overview: models/index.md
+      - Propulsion system: models/propulsion.md
+      - Battery, processor, and GPS: models/components.md
+  - Python API: python-api.md
+  - MATLAB: matlab.md
+  - Research: research.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+extra:
+  generator: true
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Dependable-Intelligent-Systems-Lab/SafeDrones
+      name: SafeDrones on GitHub
+
+copyright: Copyright &copy; Dependable Intelligent Systems Lab contributors
+
+exclude_docs: |
+  README.md
